@@ -1,14 +1,42 @@
 /* eslint-disable max-len */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { store } from '../../store';
 
 export class FilmDetails extends Component {
+  state = {
+    film: this.findFilm(),
+  }
+
+  unsubscribe = null;
+
+  componentDidMount() {
+    this.unsubscribe = store.subscribe(() => {
+      this.setState({
+        film: this.findFilm(),
+      });
+    });
+  }
+
+  componentWillUnmount() {
+    this.unsubscribe();
+  }
+
+  findFilm() {
+    const { match } = this.props;
+
+    return store.getState().films
+      .find(film => String(film.id) === match.params.id);
+  }
+
   render() {
     const {
-      title,
-      description,
-      imgUrl,
-      imdbUrl,
+      film: {
+        title,
+        description,
+        imgUrl,
+        imdbUrl,
+      },
     } = this.props;
 
     return (
